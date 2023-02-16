@@ -1,0 +1,16 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Passwordless Auth</title>
+    </head>
+    <body>
+        <h2>New User Form</h2>
+        <form action="/create-user" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="publickey">Public Key:</label>
+            <input type="text" id="publickey" name="publickey" required>
+            <button>Create User</button>
+        </form>
+    </body>
+</html>
