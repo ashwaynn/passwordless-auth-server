@@ -17,10 +17,10 @@ app.listen(server_port, () => {
 // DB connection
 
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASS,
-    database: 'passwordless_auth'
+    database: process.env.MYSQL_DATABASE
   })
 
 /*
@@ -68,42 +68,94 @@ app.get('/delete-user', (req, res) => {
     res.sendFile('./views/delete-user.html', {root: __dirname});
 });
 
-// POST Request handler
-
-app.post('/sign-in', (req, res) => {
-    console.log("Contents of the form: ", req.body);
-    sql_funcs.read_user_details(connection, req.body.username);
-    res.redirect('/welcome');
+app.get('/users', (req, res) => {
+    sql_funcs.readUsersTable(connection).then(successObject =>{
+        console.log("In app.js then(): ", successObject);
+        res.json(successObject)    
+    }).catch(err => {
+        console.log("In app.js catch(): ", err);
+        res.json(err);
+    });;
 });
 
-app.post('/create-user', (req, res) => {
+app.get('/update-user', (req, res) => {
+    res.sendFile('./views/update-user.html', {root: __dirname})
+});
+
+
+
+// POST Request handler
+
+app.post('/create-user', async (req, res) => { 
     const data = [req.body.username, "Normal-User", req.body.publickey, "{\"data\":\"hi\"}"];
-    sql_funcs.create_user(connection, data);
-    console.log("User created!");
-    res.redirect('/welcome');
+    sql_funcs.createUser(connection, data).then(successObject =>{
+        console.log("In app.js then(): ", successObject);
+        res.json(successObject)    
+    }).catch(err => {
+        console.log("In app.js catch(): ", err);
+        res.json(err);
+    });
 });
 
 app.post('/check-username', (req, res) => {
-    sql_funcs.check_user_exists(connection, req.body.username).then(user_present => {
-        if(user_present){
-            console.log("Received value of user_present is", user_present);
-            res.redirect('/check-username');
-        }else{
-            console.log("Received value of user_present is", user_present);
-            res.redirect('/welcome');
-        }
+    sql_funcs.checkUserExists(connection, req.body.username).then(successObject =>{
+        console.log("In app.js then(): ", successObject);
+        res.json(successObject)    
     }).catch(err => {
-        console.log(err);
+        console.log("In app.js catch(): ", err);
+        res.json(err);
+    });
+});
+
+app.post('/update-user', (req, res) => {
+    const data = [req.body.publickey, req.body.username];
+    sql_funcs.updateUser(connection, data).then(successObject =>{
+        console.log("In app.js then(): ", successObject);
+        res.json(successObject)    
+    }).catch(err => {
+        console.log("In app.js catch(): ", err);
+        res.json(err);
     });
 });
 
 app.post('/delete-user', (req, res) => {
-    sql_funcs.delete_user(connection, req.body.username);
-    res.redirect('/delete-user');
+    sql_funcs.deleteUser(connection, req.body.username).then(successObject =>{
+        console.log("In app.js then(): ", successObject);
+        res.json(successObject)    
+    }).catch(err => {
+        console.log("In app.js catch(): ", err);
+        res.json(err);
+    });
 });
+
+
 
 // 404 page
 
 app.use((req, res) => {
     res.status(404).sendFile('./views/404.html', {root: __dirname});
 });
+
+
+
+/*
+To-Do
+
+res.send() / res.json() for all APIs
+success obj { successState, data {}, errorMsg}
+async await
+
+*/
+
+/*
+app.post('/create-user', async (req, res) => { 
+    const data = [req.body.username, "Normal-User", req.body.publickey, "{\"data\":\"hi\"}"];
+    try{
+        const successObject = await sql_funcs.createUser(connection, data);
+        console.log("In app.js: ", successObject);
+        res.json(successObject);
+    }catch(err){
+        console.log("Error!!!!!!");
+    }
+});
+*/

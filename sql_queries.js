@@ -1,80 +1,164 @@
 
+const dbStmts = require('./queries')
+
 // Create a user in the DB
 
-const create_user = (connection, data) => {
-    let insert_stmt = `INSERT INTO users (user_name, user_role, public_key, meta_data) VALUES (?, ?, ?, ?)`;
-    
-    connection.query(insert_stmt, data, (err) => {
-        if(err){
-            console.log(err);
-        }else{
-            console.log("User created in DB");
-        }
+const createUser = (connection, data) => {
+
+    return new Promise((resolve, reject) => {
+        let insertStmt = dbStmts.QUERIES.USERS.CREATE_USER;
+        connection.query(insertStmt,data, (err, results, fields) => {
+            if(err){
+                console.log(err);
+                const successObject = { successState : false, operation: "Insert " + data[0], queryResults : {}, errorMessage : err.sqlMessage };
+                reject(successObject);
+            }
+            else{
+                //console.log("Results: ", results);
+                //console.log("Fields: ", fields);
+                const successObject = { successState : true, operation: "Insert " + data[0], queryResults : results, errorMessage : "No error" };
+                resolve(successObject);
+            }
+        });
     });
 };
+
+
 
 // Read user details
 
-const read_user_details = (connection, username) => {
-    let select_stmt = `SELECT * FROM users WHERE user_name=?`;
-    
-    connection.query(select_stmt, username, (err, results, fields) => {
-        if(err){
-            console.log(err);
-        }else{
-            console.log(results[0].user_name);
-            console.log(results[0].user_role);
-            console.log(results[0].public_key);
-            console.log(results[0].meta_data);
-            //console.log("The length of the Results array is", results.length);
-        }
+const readUsersTable = (connection) => {
+
+    return new Promise((resolve, reject) => {
+        let selectStmt = dbStmts.QUERIES.USERS.READ_ALL_USERS;
+        connection.query(selectStmt, (err, results, fields) => {
+            if(err){
+                console.log(err);
+                const successObject = { successState : false, operation: "Select (entire table)", queryResults : {}, errorMessage : err.sqlMessage };
+                reject(successObject);
+            }else{
+                //console.log("Results: ", results);
+                //console.log("Fields: ", fields);
+                const successObject = { successState : true, operation: "Select (entire table)", queryResults : results, errorMessage : "No error" };
+                resolve(successObject);
+            }
+        });
     });
 };
 
+
+
 // Check if user exists
 
-const check_user_exists = (connection, username) => {
+const checkUserExists = (connection, username) => {
     
     return new Promise((resolve, reject) => {
-        let select_stmt = `SELECT * FROM users WHERE user_name=?`;
-    
-        connection.query(select_stmt, username, (err, results) => {
+        let selectStmt = dbStmts.QUERIES.USERS.READ_USER;
+        connection.query(selectStmt, username, (err, results, fields) => {
             if(err){
                 console.log(err);
-                reject(err);
+                const successObject = { successState : false, operation: "Select " + username , queryResults : {}, errorMessage : err.sqlMessage };
+                reject(successObject);
             }else{
+                //console.log("Results: ", results);
+                //console.log("Fields: ", fields);
                 if(results.length === 1){
-                    console.log("User exists, returning 'true'");
-                    resolve(true);
+                    const successObject = { successState : true, operation: "Select " + username + " - " + username + " EXISTS", queryResults : results, errorMessage : "No error" };
+                    resolve(successObject);
                 }else{
-                    console.log("User not present, returning 'false'");
-                    resolve(false);
+                    const successObject = { successState : true, operation: "Select " + username + " - " + username + " DOES NOT EXIST", queryResults : results, errorMessage : "No error" };
+                    resolve(successObject);
                 }
             }
         });
     });
 };
 
+
+
 // [Update] : Update user details
+
+const updateUser = (connection, data) => {
+    
+    return new Promise((resolve, reject) => {
+        let updateStmt = dbStmts.QUERIES.USERS.UPDATE_USER;
+        connection.query(updateStmt, data, (err, results, fields) => {
+            if(err){
+                console.log(err);
+                const successObject = { successState : false, operation: "Update " + data[1] , queryResults : {}, errorMessage : err.sqlMessage };
+                reject(successObject);
+            }else{
+                //console.log("Results: ", results.affectedRows);
+                //console.log("Fields: ", fields);
+                if(results.affectedRows === 0){
+                    const successObject = { successState : true, operation: "Update " + data[1] + " - " + data[1] + " NOT PRESENT to update", queryResults : results, errorMessage : "No error" };
+                    resolve(successObject);
+                }else{
+                    const successObject = { successState : true, operation: "Update " + data[1] + " - " + data[1] + " UPDATED", queryResults : results, errorMessage : "No error" };
+                    resolve(successObject);
+                }
+                
+            }
+        });
+    });
+};
 
 
 
 // [Delete] : Delete a user
 
-const delete_user = (connection, username) => {
-    let delete_stmt = `DELETE FROM users WHERE user_name=?`;
+const deleteUser = (connection, username) => {
     
-    connection.query(delete_stmt, username, (err, results, fields) => {
-        if(err){
-            console.log(err);
-        }else{
-            console.log(username, "deleted!");
-            console.log(results);
-        }
+    return new Promise((resolve, reject) => {
+        let deleteStmt = dbStmts.QUERIES.USERS.DELETE_USER;
+        connection.query(deleteStmt, username, (err, results, fields) => {
+            if(err){
+                console.log(err);
+                const successObject = { successState : false, operation: "Delete " + username , queryResults : {}, errorMessage : err.sqlMessage };
+                reject(successObject);
+            }else{
+                //console.log("Results: ", results.affectedRows);
+                //console.log("Fields: ", fields);
+                if(results.affectedRows === 0){
+                    const successObject = { successState : true, operation: "Delete " + username + " - " + username + " NOT PRESENT to delete", queryResults : results, errorMessage : "No error" };
+                    resolve(successObject);
+                }else{
+                    const successObject = { successState : true, operation: "Delete " + username + " - " + username + " DELETED", queryResults : results, errorMessage : "No error" };
+                    resolve(successObject);
+                }
+                
+            }
+        });
     });
 };
 
 
+
 // Export the functions
 
-module.exports = { create_user, read_user_details, check_user_exists, delete_user };
+module.exports = { createUser, readUsersTable, checkUserExists, deleteUser, updateUser };
+
+
+
+
+
+
+/*
+const createUser = async (connection, data) => {   
+    try {
+        let insertStmt = `INSERT INTO users (user_name, user_role, public_key, meta_data) VALUES (?, ?, ?, ?)`;
+        const queryResults = await connection.query(insertStmt,data);
+        //console.log(queryResults);
+        const successObject = { successState : true, data : {}, errorMessage : "No error"};
+        return successObject;
+    }
+    catch(err)
+    {
+        console.log("----------ERROR--------------");
+        console.log(err);
+        const successObject = { successState : false, data : {}, errorMessage : "Error"};
+        return successObject;
+    }
+
+};
+*/
