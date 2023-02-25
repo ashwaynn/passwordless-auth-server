@@ -1,16 +1,15 @@
 const { ROUTES } = require('../constants/route-constants');
-
 const { Router } = require('express');
 const { User } = require('../Interfaces/AppInterfaces');
 const { checkUserExists, createUser } = require('../doa/user-data-controller');
 const { ResponseObject } = require('../Interfaces/ResponseObjects');
 const { ERR_MESSAGES } = require('../constants/app-constants');
 
+
 const userRouter = Router();
 
 userRouter.post(ROUTES.USER.CHECK_USERNAME, async (req, res) => {
     const { username } = req.body;
-
     try {
         const result = await checkUserExists(username);
         res.status(200).json(result);
@@ -25,6 +24,7 @@ userRouter.post(ROUTES.USER.CHECK_USERNAME, async (req, res) => {
 
 userRouter.post(ROUTES.USER.CREATE_USER, async (req, res) => {
     const { username, publicKey, metaData } = req.body;
+
     const user = new User(username, publicKey, metaData);
 
     try {
