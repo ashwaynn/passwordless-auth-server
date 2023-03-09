@@ -3,7 +3,6 @@ const { QUERIES } = require('../constants/queries');
 const { User } = require('../Interfaces/AppInterfaces');
 const { ResponseObject } = require('../Interfaces/ResponseObjects');
 const { executeQuery } = require('../utils/db-utils');
-const {publicKeyConversion} = require('../services/UserSignIn')
 /**
  * This method checks whether the username is already exists in the table or not.
  * @param {string} username
@@ -15,7 +14,7 @@ const checkUserExists = async (username) => {
         const result = await executeQuery(QUERIES.USERS.CHECK_USERNAME, [
             username,
         ]);
-
+        
         responseObject.isSuccess = true;
         responseObject.payload = result[0];
         return responseObject;
@@ -32,12 +31,10 @@ const checkUserExists = async (username) => {
  */
 const createUser = async (user) => {
     const responseObject = new ResponseObject();
-    const ConvertedPublicKey = publicKeyConversion(user.publicKey);
     try {
         const result = await executeQuery(QUERIES.USERS.CREATE_USER, [
             user.username,
-            ConvertedPublicKey,
-            //user.publicKey,
+            user.publicKey,
             JSON.stringify(user.metaData),
         ]);
         responseObject.isSuccess = true;
@@ -48,6 +45,7 @@ const createUser = async (user) => {
         return responseObject;
     }
 };
+
 
 module.exports = {
     checkUserExists,

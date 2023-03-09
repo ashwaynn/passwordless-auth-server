@@ -1,11 +1,15 @@
 const express = require('express');
 const { ERR_MESSAGES } = require('./src/constants/app-constants');
+const cookieParser = require('cookie-parser');
+
 
 const { API_ROUTES } = require('./src/constants/route-constants');
 const { ResponseObject } = require('./src/Interfaces/ResponseObjects');
 const { authRouter } = require('./src/routes/auth');
 const { userRouter } = require('./src/routes/user');
 const { dbConfig } = require('./src/utils/db-utils');
+const { setCORSHeaders } = require('./src/middlewares/CORS');
+
 
 require('dotenv').config();
 
@@ -20,8 +24,11 @@ app.listen(server_port, () => {
 dbConfig();
 
 // Middleware to parse form data into a useable format
+app.use(setCORSHeaders);
+app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 // GET Request handlers
 
 app.use(API_ROUTES.AUTH, authRouter);
