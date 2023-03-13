@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const { ERR_MESSAGES } = require('./src/constants/app-constants');
 
 const { API_ROUTES } = require('./src/constants/route-constants');
@@ -10,7 +11,7 @@ const { dbConfig } = require('./src/utils/db-utils');
 require('dotenv').config();
 
 const app = express();
-const server_port = 3000;
+const server_port = 6000;
 
 app.listen(server_port, () => {
     console.log('\nPasswordless Auth Server listening on port', server_port);
@@ -20,8 +21,11 @@ app.listen(server_port, () => {
 dbConfig();
 
 // Middleware to parse form data into a useable format
+
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 // GET Request handlers
 
 app.use(API_ROUTES.AUTH, authRouter);

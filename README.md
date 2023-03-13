@@ -28,15 +28,12 @@ flush privileges;
 
 -   The project is in _development stage_.
 -   It contains a very simple server written using `Node.js`.
--   The server runs on _port 3000_.
+-   The server runs on **_port 6000_**.
 -   This repo also contains a `SQL` script that creates a **_users_** table in the schema `passwordless_auth` (Drops the schema if it already exists and creates it again).
 
 ### CRUD Operations
 
 To perform the CRUD operations, visit the following routes:
 
--   `/create-user` for creating a user.
--   `/users` for reading the entire **_users_** table.
--   `/check-username` for reading the details of a specific user.
--   `/update-user` for updating the details of a specific user.
--   `/delete-user` for deleting a specific user.
+-   `/api/user/create-user` for creating a user.
+-   `/api/user/check-username` for reading the details of a specific user.
