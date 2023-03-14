@@ -28,7 +28,7 @@ flush privileges;
 
 -   The project is in _development stage_.
 -   It contains a very simple server written using `Node.js`.
--   The server runs on **_port 6000_**.
+-   The server runs on **_port 6000_** (Adding an explicit allow to the port **in the browser** will be required).
 -   This repo also contains a `SQL` script that creates a **_users_** table in the schema `passwordless_auth` (Drops the schema if it already exists and creates it again).
 
 ### CRUD Operations

@@ -36,7 +36,6 @@ const createUser = async (user) => {
     try {
         const result = await executeQuery(QUERIES.USERS.CREATE_USER, [
             user.username,
-            user.userRole,
             JSON.stringify(user.publicKey),
             JSON.stringify(user.metaData)
         ]);

@@ -25,7 +25,7 @@ userRouter.post(ROUTES.USER.CHECK_USERNAME, async (req, res) => {
 
 userRouter.post(ROUTES.USER.CREATE_USER, async (req, res) => {
     const { username, publicKey, metaData } = req.body;
-    const user = new User(username, "Normal-User", publicKey, metaData);
+    const user = new User(username, publicKey, metaData);
 
     try {
         const result = await createUser(user);
