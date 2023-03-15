@@ -2,7 +2,9 @@ const {checkUserExists} = require('../doa/user-data-controller');
 const {ChallengeGeneration, Authentication} = require('../asym-auth-server-sdk/ChallengeResponse.js')
 const { ResponseObject } = require('../Interfaces/ResponseObjects');
 const { getPublicKey, getUserMetadata } = require('../doa/Sign-in-doa');
-
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+dotenv.config();
 
 
 const GetChallenge = async (username) => {
@@ -40,15 +42,17 @@ const SignIn = async (response, signature, challenge) => {
       //var pem = getPem(publicKey.modulus, publicKey.exponent);
 
       //change code to send publickey once signup is implemented
-        const {token, username} = await Authentication(response, signature, challenge);
+        const username = await Authentication(response, signature, challenge);
+        const {dp, email, displayName, userRole} = await getUserMetadata(username);
 
-
-        const metaData = await getUserMetadata(username);
-
-        responseObject.payload = {token, metaData};
+        const token = jwt.sign({username, userRole}, process.env.JWT_SECRET, { expiresIn: '1h' });
+        
+        
+        
+        responseObject.payload = {username, displayName, email, dp, userRole};
         responseObject.message = 'login successful';
         responseObject.isSuccess = true;
-        return responseObject;
+        return {token, responseObject};
             
       } catch (e) {
       if (e.message === 'username is not present') {
@@ -60,10 +64,30 @@ const SignIn = async (response, signature, challenge) => {
   }
 };
 
-  
+const logOut = async (username) => {
+  const responseObject = new ResponseObject();
+  try {
+
+    responseObject.isSuccess = true;
+    responseObject.payload = result;
+    return responseObject;
+    }
+ catch (e) {
+    
+    if (e.message === 'User does not exist') {
+      throw new Error('User does not exist');
+    } else {
+      throw new Error('Error in challenge or signature generation');
+    }
+    
+}
+};
+
+
 module.exports = {
     GetChallenge,
-    SignIn
+    SignIn,
+    logOut
 };
   
   

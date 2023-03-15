@@ -25,6 +25,7 @@ dbConfig();
 
 // Middleware to parse form data into a useable format
 app.use(setCORSHeaders);
+
 app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -22,11 +22,19 @@ const getUserMetadata = async (user) => {
             user,
         ]);
 
-        return result; 
+        const userInfo = JSON.parse(result[0].meta_data);
+        const dp = userInfo.dp;
+        const email = userInfo.email;
+        const displayName = userInfo.displayName;
+        const userRole = result[0].user_role;
+
+        return {dp, email, displayName, userRole}; 
     } catch (e) {
         throw new Error('username is not present');
     }
 };
+
+
 
 module.exports = {
     getPublicKey,

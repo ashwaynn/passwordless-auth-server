@@ -16,7 +16,6 @@ async function createNonce(length = 16) {
       const nonce = randomBytes.toString('hex');
       return nonce;
     } catch (error) {
-
       throw new Error('Failed to create nonce');
     }
   }
@@ -90,8 +89,7 @@ async function Authentication(response, signature, challenge){
         if (signature === signature2) {
           if((Date.now() - timestamp) < 60*1000)
            {      
-                const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
-                return {token, username};
+                return username;
            }
            else {
             throw new Error('Timestamp is invalid');

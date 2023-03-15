@@ -2,7 +2,7 @@ const { ROUTES } = require("../constants/route-constants");
 const { Router } = require("express");
 const { ResponseObject } = require('../Interfaces/ResponseObjects');
 const { ERR_MESSAGES } = require('../constants/app-constants');
-const { SignIn, GetChallenge } = require("../services/UserSignIn");
+const { SignIn, GetChallenge, logOut } = require("../services/UserSignIn");
 const http = require('http');
 
 const authRouter = Router();
@@ -29,9 +29,11 @@ authRouter.post(ROUTES.AUTH.GET_CHALLENGE, async (req, res) => {
 authRouter.post(ROUTES.AUTH.SIGN_IN, async (req, res) => {
   const { response, signature, challenge } = req.body;
     try {
-        const result = await SignIn(response, signature, challenge);
-        console.log(result.payload.token);
-        res.cookie('token', `${result.payload.token}`, { httpOnly: true, path: '/' }).status(200).json(result.payload.metaData);
+        const {token, responseObject} = await SignIn(response, signature, challenge);
+        const expirationTime = new Date(Date.now() + 3600 * 100);
+        res.cookie("jwt", token, { httpOnly: true, path: '/', expires: expirationTime}).status(200).json(responseObject);
+        //res.clearCookie('token', { path: '/' }).status(200).json(responseObject);
+
     } catch (error) {
       if (error.message === 'username is not present'){
         const result = new ResponseObject(
@@ -50,6 +52,20 @@ authRouter.post(ROUTES.AUTH.SIGN_IN, async (req, res) => {
       }
     }
 });
+
+authRouter.get(ROUTES.AUTH.LOG_OUT, async (req, res) => {
+    try {
+      res.clearCookie('jwt').status(200).json({ message: 'Logout successful' });
+      res.end();
+    } catch (error) {
+        const result = new ResponseObject(
+            false,
+            ERR_MESSAGES.GENERAL.INTERNAL_SERVER_ERR,
+        );
+        res.status(500).json(result);
+    }
+});
+
 
 module.exports = {
   authRouter,

@@ -22,7 +22,7 @@ userRouter.post(ROUTES.USER.CHECK_USERNAME, async (req, res) => {
     }
 });
 
-userRouter.post(ROUTES.USER.CREATE_USER, async (req, res) => {
+userRouter.post(ROUTES.USER.CREATE_USER,async (req, res) => {
     const { username, publicKey, metaData } = req.body;
 
     const user = new User(username, publicKey, metaData);
@@ -38,6 +38,30 @@ userRouter.post(ROUTES.USER.CREATE_USER, async (req, res) => {
         res.status(500).json(result);
     }
 });
+
+
+
+// userRouter.post(ROUTES.USER.DELETE_USER,() => {
+//     console.log('bleh')
+//     next()
+// },async (req, res) => {
+//     const { username, publicKey, metaData } = req.body;
+
+//     const user = new User(username, publicKey, metaData);
+
+//     try {
+//         const result = await createUser(user);
+//         res.status(200).json(result);
+//     } catch (error) {
+//         const result = new ResponseObject(
+//             false,
+//             ERR_MESSAGES.GENERAL.INTERNAL_SERVER_ERR
+//         );
+//         res.status(500).json(result);
+//     }
+// });
+
+
 
 module.exports = {
     userRouter,

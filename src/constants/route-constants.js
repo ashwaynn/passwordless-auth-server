@@ -5,6 +5,7 @@ const ROUTES = {
     SIGN_UP: "/sign-up",
     SIGN_IN: "/sign-in",
     GET_CHALLENGE: "/challenge",
+    LOG_OUT: "/logout"
   },
   USER: {
     BASE: "/user",
