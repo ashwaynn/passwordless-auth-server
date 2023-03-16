@@ -46,8 +46,26 @@ const createUser = async (user) => {
     }
 };
 
+const updateUser = async (username, metaData) => {
+    const responseObject = new ResponseObject();
+    try {
+        console.log(username, metaData);
+        const result = await executeQuery(QUERIES.USERS.UPDATE_USER, [
+            username,
+            JSON.stringify(metaData),
+        ]);
+        responseObject.isSuccess = true;
+        return responseObject;
+    } catch (e) {
+        responseObject.isSuccess = false;
+        responseObject.message = ERR_MESSAGES.GENERAL.ERR_MSG;
+        return responseObject;
+    }
+};
+
 
 module.exports = {
     checkUserExists,
     createUser,
+    updateUser
 };

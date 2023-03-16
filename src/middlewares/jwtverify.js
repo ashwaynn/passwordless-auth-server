@@ -1,7 +1,7 @@
-const authenticateToken = (req, res, next) => {
-    const token = req.cookies.token;
+const jwt = require('jsonwebtoken');
 
-    //Checking if the token is null
+const authenticateToken = (req, res, next) => {
+    const token = req.cookies.jwt;;
     if (!token) {
       return res.status(401).send("Authorization failed. No access token.");
     }
@@ -12,7 +12,13 @@ const authenticateToken = (req, res, next) => {
         console.log(err);
         return res.status(403).send("Could not verify token");
       }
-      req.user = user;
+      const decodedToken = jwt.decode(token);
+      req.userName = decodedToken.userName;
+      req.userRole = decodedToken.userRole;
     });
     next();
   };
+
+  module.exports = {
+    authenticateToken
+};
