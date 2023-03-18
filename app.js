@@ -1,6 +1,7 @@
 const express = require('express');
 const { ERR_MESSAGES } = require('./src/constants/app-constants');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
 
 const { API_ROUTES } = require('./src/constants/route-constants');
@@ -25,6 +26,8 @@ dbConfig();
 
 // Middleware to parse form data into a useable format
 app.use(setCORSHeaders);
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

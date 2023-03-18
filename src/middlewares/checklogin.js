@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
 
-const authenticateToken = (req, res, next) => {
+const checkLoggedIn = (req, res, next) => {
     const token = req.cookies.jwt;
     if (!token) {
-      return res.status(401).send("Authorization failed. No access token.");
+      return res.status(401).send("Authorization failed. No access token.")
     }
   
     //Verifying if the token is valid.
@@ -20,5 +20,5 @@ const authenticateToken = (req, res, next) => {
   };
 
   module.exports = {
-    authenticateToken
+    checkLoggedIn
 };

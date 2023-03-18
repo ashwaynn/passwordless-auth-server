@@ -1,12 +1,27 @@
 const { ROUTES } = require('../constants/route-constants');
 const { Router } = require('express');
 const { User } = require('../Interfaces/AppInterfaces');
-const { checkUserExists, createUser, updateUser } = require('../doa/user-data-controller');
+const { checkUserExists, createUser, updateUser, extractUser } = require('../doa/user-data-controller');
 const { ResponseObject } = require('../Interfaces/ResponseObjects');
 const { ERR_MESSAGES } = require('../constants/app-constants');
-const { authenticateToken} = require('../middlewares/jwtverify')
+const { authenticateToken} = require('../middlewares/jwtverify');
+const {checkLoggedIn} = require('../middlewares/checklogin');
 
 const userRouter = Router();
+
+userRouter.get(ROUTES.USER.LOGGED_IN, checkLoggedIn, async (req, res) => {
+    try {
+        const result = await extractUser(req.decodeduserName, req.decodeduserRole);
+        res.status(200).json(result);
+    } catch (error) {
+        const result = new ResponseObject(
+            false,
+            ERR_MESSAGES.GENERAL.INTERNAL_SERVER_ERR
+        );
+        res.status(500).json(result);
+    }
+});
+
 
 userRouter.post(ROUTES.USER.CHECK_USERNAME, async (req, res) => {
     const { username } = req.body;
@@ -41,18 +56,26 @@ userRouter.post(ROUTES.USER.CREATE_USER, async (req, res) => {
 
 
 userRouter.put(ROUTES.USER.UPDATE_USER, authenticateToken, async (req, res) => {
-    const {username, metaData} = req.body;
-    console.log(req.userRole);
+    const {username, metadata} = req.body;
     try {
-        const result = 'updated';
-        //const result = await updateUser(username, metaData);
+        const result = await updateUser(metadata, username, req.decodeduserName);
         res.status(200).json(result);
     } catch (error) {
+        if ( error.message === 'Not authenticated to update info') {
         const result = new ResponseObject(
             false,
-            ERR_MESSAGES.GENERAL.INTERNAL_SERVER_ERR
+            ERR_MESSAGES.GENERAL.AUTHENTICATION_FAILED
         );
-        res.status(500).json(result);
+        res.status(401).json(result);
+        }
+        else {
+            const result = new ResponseObject(
+                false,
+                ERR_MESSAGES.GENERAL.INTERNAL_SERVER_ERR
+            );
+            res.status(500).json(result);
+
+        }
     }
 });
 

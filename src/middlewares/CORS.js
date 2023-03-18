@@ -5,3 +5,5 @@ exports.setCORSHeaders = function(req, res, next) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     next();
 };
+
+//"GET, POST, PATCH, DELETE, OPTIONS, PUT"

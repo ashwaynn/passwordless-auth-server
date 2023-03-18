@@ -32,8 +32,6 @@ authRouter.post(ROUTES.AUTH.SIGN_IN, async (req, res) => {
         const {token, responseObject} = await SignIn(response, signature, challenge);
         const expirationTime = new Date(Date.now() + 3600 * 100);
         res.cookie("jwt", token, { httpOnly: true, path: '/', expires: expirationTime}).status(200).json(responseObject);
-        //res.clearCookie('token', { path: '/' }).status(200).json(responseObject);
-
     } catch (error) {
       if (error.message === 'username is not present'){
         const result = new ResponseObject(
