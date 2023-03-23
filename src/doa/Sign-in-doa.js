@@ -16,12 +16,10 @@ const getPublicKey = async (user) => {
 };
 
 const getUserMetadata = async (user) => {
-    
     try {
         const result = await executeQuery(QUERIES.SIGN_IN.EXTRACT_METADATA, [
             user,
         ]);
-
         const userInfo = JSON.parse(result[0].meta_data);
         const dp = userInfo.dp;
         const email = userInfo.email;

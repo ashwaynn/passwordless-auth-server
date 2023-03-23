@@ -2,12 +2,6 @@ const dotenv = require('dotenv');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 dotenv.config();
-var getPem = require('rsa-pem-from-mod-exp');
-
-
-const lel = {"modulus":"tqUN2PhK1pEHfw1cLELtud7mNdTCYcOphL5PcijANV1nO3C98fl/9VOT69ivcBGMc4gFgrHARHuThIJqSSIq2DIbMD6i6cp/rhqr9dneiaVzHoLGWnrNx8QuNGS63nm/dDn+G6us4nZW6IqcvSFwDvaBcYF8K4BzYrIh8K7sMlk=","exponent":"AQAB"}
-
-var pem = getPem(lel.modulus, lel.exponent);
 
 
 async function createNonce(length = 16) {
@@ -51,7 +45,8 @@ async function SignatureGeneration(challenge){
 
 
 //verification of response
-async function decryptResponse(response, challenge) {
+async function decryptResponse(response, challenge, pem) {
+
   try {
     const isVerified = crypto.verify(
       "sha256",
@@ -70,14 +65,12 @@ async function decryptResponse(response, challenge) {
 
 
 //authentication
-async function Authentication(response, signature, challenge){
+async function Authentication(response, signature, challenge, pem){
       try {
+       
       const [username, , timestamp] = challenge.split(':').map(e => isNaN(e) ? e : parseInt(e));  
-
-
       //edit the code to send the publicKey once signup has been implemented
-      const isVerified = await decryptResponse(response, challenge);
-      
+      const isVerified = await decryptResponse(response, challenge, pem);
         //creation of signature to verify
         if (isVerified){
           const hmac2 = crypto.createHmac('sha256', process.env.SECRET_KEY);

@@ -20,7 +20,7 @@ authRouter.post(ROUTES.AUTH.GET_CHALLENGE, async (req, res) => {
     } catch (error) {
         const result = new ResponseObject(
             false,
-            ERR_MESSAGES.GENERAL.INTERNAL_SERVER_ERR,
+            error.message,
         );
         res.status(500).json(result);
     }

@@ -4,6 +4,7 @@ const { ResponseObject } = require('../Interfaces/ResponseObjects');
 const { getPublicKey, getUserMetadata } = require('../doa/Sign-in-doa');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+var getPem = require('rsa-pem-from-mod-exp');
 dotenv.config();
 
 
@@ -27,7 +28,7 @@ const GetChallenge = async (username) => {
       if (e.message === 'User does not exist') {
         throw new Error('User does not exist');
       } else {
-        throw new Error('Error in challenge or signature generation');
+        throw new Error('Internal Server Error');
       }
       
   }
@@ -37,16 +38,15 @@ const GetChallenge = async (username) => {
 const SignIn = async (response, signature, challenge) => {
     const responseObject = new ResponseObject();
     try {
-
-      //const publicKey = await getPublicKey(username);
-      //var pem = getPem(publicKey.modulus, publicKey.exponent);
+      const [username1, , timestamp] = challenge.split(':').map(e => isNaN(e) ? e : parseInt(e));  
+      const publicKey = await getPublicKey(username1);
+      const data = JSON.parse(publicKey);
+      var pem = getPem(data.modulus, data.exponent);
 
       //change code to send publickey once signup is implemented
-        const username = await Authentication(response, signature, challenge);
+        const username = await Authentication(response, signature, challenge, pem);
         const {dp, email, displayName, userRole} = await getUserMetadata(username);
-
         const token = jwt.sign({username, userRole}, process.env.JWT_SECRET, { expiresIn: '1h' });
-        
         
         
         responseObject.payload = {username, displayName, email, dp, userRole};
