@@ -3,14 +3,17 @@ const ROUTES = {
   AUTH: {
     BASE: "/auth",
     SIGN_UP: "/sign-up",
-    SIGN_IN: "/sign-in"
+    SIGN_IN: "/sign-in",
+    GET_CHALLENGE: "/challenge",
+    LOG_OUT: "/logout"
   },
   USER: {
     BASE: "/user",
     CREATE_USER: "/create-user",
     CHECK_USERNAME: "/check-username",
     UPDATE_USER: "/update-user",
-    DELETE_USER: "/delete-user"
+    DELETE_USER: "/delete-user",
+    LOGGED_IN: "/logged-in"
   },
 };
 
