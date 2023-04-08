@@ -8,7 +8,7 @@ const getPublicKey = async (user) => {
         const result = await executeQuery(QUERIES.SIGN_IN.EXTRACT_PUBLICKEY, [
             user,
         ]);
-
+        
         return result[0].public_key; 
     } catch (e) {
         throw new Error('username is not present');
