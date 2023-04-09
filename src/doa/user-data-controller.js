@@ -3,6 +3,11 @@ const { QUERIES } = require('../constants/queries');
 const { User } = require('../Interfaces/AppInterfaces');
 const { ResponseObject } = require('../Interfaces/ResponseObjects');
 const { executeQuery } = require('../utils/db-utils');
+const {decryptResponse} = require('../asym-auth-server-sdk/ChallengeResponse');
+const {getPublicKey} = require('./Sign-in-doa');
+const { get } = require('http');
+var getPem = require('rsa-pem-from-mod-exp');
+
 /**
  * This method checks whether the username is already exists in the table or not.
  * @param {string} username
@@ -97,10 +102,45 @@ const updateUser = async (metaData, username, decodeduserName) => {
     }
 };
 
+const DeleteUser = async (username, decodeduserName, encryptedusername) => {
+    const responseObject = new ResponseObject();
+    try {
+        if (username === decodeduserName) {
+            
+            const publicKey = await getPublicKey(username);
+            const data = JSON.parse(publicKey);
+            var pem = getPem(data.modulus, data.exponent);
+            const isVerified = await decryptResponse(encryptedusername, username, pem);
+
+            if (isVerified){
+
+                await executeQuery(QUERIES.USERS.DELETE_USER, [username]);
+
+            }
+            else {
+                throw new Error('Not authenticated');
+            }
+            
+        }
+        else {
+            throw new Error('Not signed In');
+        }
+        responseObject.isSuccess = true;
+        responseObject.payload = 'deleted user';
+        return responseObject;
+    } catch (e) {
+        if (e.message === 'Not authenticated')
+            throw new Error('Not authenticated to delete info');
+        else
+            throw new Error('Internal server error');
+    }
+};
+
 
 module.exports = {
     checkUserExists,
     createUser,
     updateUser,
-    extractUser
+    extractUser,
+    DeleteUser
 };
