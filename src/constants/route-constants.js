@@ -15,11 +15,18 @@ const ROUTES = {
     DELETE_USER: "/delete-user",
     LOGGED_IN: "/logged-in"
   },
+  ADMIN: {
+    BASE: "/admin-dashboard",
+    LIST_USERS: "/list-users",
+    ADMIN_UPDATES_USER: "/admin-updates-user",
+    ADMIN_DELETES_USER: "/admin-deletes-user"
+  }
 };
 
 const API_ROUTES = {
   AUTH: `${ROUTES.BASE}${ROUTES.AUTH.BASE}`,
   USER: `${ROUTES.BASE}${ROUTES.USER.BASE}`,
+  ADMIN: `${ROUTES.BASE}${ROUTES.ADMIN.BASE}`
 };
 
 module.exports = {

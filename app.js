@@ -11,6 +11,7 @@ const { authRouter } = require('./src/routes/auth');
 const { userRouter } = require('./src/routes/user');
 const { dbConfig } = require('./src/utils/db-utils');
 const { setCORSHeaders } = require('./src/middlewares/CORS');
+const { adminRouter } = require('./src/routes/admin');
 
 
 require('dotenv').config();
@@ -35,10 +36,11 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// GET Request handlers
+// Request handlers
 
 app.use(API_ROUTES.AUTH, authRouter);
 app.use(API_ROUTES.USER, userRouter);
+app.use(API_ROUTES.ADMIN, adminRouter);
 
 // 404 page
 

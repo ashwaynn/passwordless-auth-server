@@ -9,6 +9,11 @@ const QUERIES = {
         EXTRACT_PUBLICKEY: 'SELECT public_key FROM users WHERE user_name = ?',
         EXTRACT_METADATA: 'SELECT user_role, meta_data FROM users WHERE user_name = ?',
         
+    },
+    ADMIN: {
+        LIST_USERS: `SELECT user_name, user_role, meta_data FROM users`,
+        ADMIN_UPDATES_USER: `UPDATE users SET user_role = ? WHERE user_name = ?`,
+        ADMIN_DELETES_USER: `DELETE FROM users WHERE user_name = ?`
     }
 };
 
