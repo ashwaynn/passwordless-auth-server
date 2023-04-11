@@ -46,7 +46,6 @@ async function SignatureGeneration(challenge){
 
 //verification of response
 async function decryptResponse(response, challenge, pem) {
-
   try {
     const isVerified = crypto.verify(
       "sha256",
@@ -100,4 +99,5 @@ module.exports = {
   ChallengeGeneration,
   SignatureGeneration,
   Authentication,
+  decryptResponse
 };
